@@ -1,29 +1,41 @@
 #!/usr/bin/env python
 # My first script. Inspired by Zaid Sabih - Ethical Hacker, Computer Scientist and CEO of zSecurity - .
-# MAC.py version 0.9
+# mac.py version 0.9 for Linux
 
 import subprocess
 import optparse
 import shlex
+# from mac2vendors import get_mac_vendor
+
+# [['00:00:00', '00:00:00', 'Officially Xerox, but 0:0:0:0:0:0 is more common']]
 
 parser = optparse.OptionParser()
 
 parser.add_option("-i", "--interface", dest = "interface", help = " Interface to change its MAC (e.g. eth0, wlan0, tun0, etc.) ")
-parser.add_option("-m", "--mac", dest = "mac_address", help = """ The new virtual MAC address in 6 hexadecimal bytes seperated by colons;
+parser.add_option("-m", "--mac", dest = "new_address", help = """ The new virtual MAC address in 6 hexadecimal bytes seperated by colons;
                                                                   e.g. XX:XX:XX:XX:XX:XX, (X=0-9 or A-F) --> 3C:7C:3F:A3:B2:C1 (ASUS device); 
                                                                   total random MACs are working too as long as they are UNICAST (e.g. 97:11:B7:A3:41:95);
                                                                   EVERY TIME when You do a shut down, a restart or a switch user the original hardcoded 
                                                                   MAC address should be RESTORED.""")
+# parser.add_option("-v", "--vendor", dest = "vendor_list", help = "prints a vendor list")
 
 (options, arguments) = parser.parse_args()
 
 interface   = options.interface
-mac_address = options.mac_address
+new_address = options.new_address
+# vendor_list = options.vendor_list
+# vendor_list = get_mac_vendor(mac_address = "00:00:00")
+# print(vendor_list)
+
 print()
 
-print(""" This script is only for educational purpose and I am not responsible for any kind of damage.
+print(""" This script is only for educational purpose and I am not responsible for any kind of damage.""")
 
-[+] Please choose your interface. For help do a Ctrl+C and type " python3 mac.py --help " """)
+print()
+
+print()
+
+print(""" [+] Please choose your interface. For help do a Ctrl+C and type " python3 MAC.py --help " """)
 
 interface = input("interface --> ")
 
@@ -62,16 +74,19 @@ F4:D9:FB        Samsung Electronics Co. LTD
 print()
 print()
 
-mac_address = input('Type the 6 bytes of Your new virtual MAC seperated by colons --> ')
+new_address = input('Type the 6 bytes of Your new virtual MAC seperated by colons --> ')
 
 print()
 
-print(" [+] Changing MAC address for " + interface + " to " + mac_address)
+print(" [+] Changing MAC address for " + interface + " to " + new_address)
 
 
-cmd1=shlex.split('sudo ' + 'rfkill ' + 'unblock ' + 'all')
-cmd2=shlex.split('sudo ' + 'ip ' + 'link ' + 'set ' + 'dev ' + interface + ' addr ' + mac_address)
+cmd1=shlex.split('rfkill ' + 'unblock ' + 'all')
+cmd2=shlex.split('ip ' + 'link ' + 'set ' + 'dev ' + interface + ' addr ' + new_address)
 cmd3=shlex.quote(interface)
+cmd4=shlex.split('ip' + ' link')
+cmd5=shlex.quote(new_address)
+
 
 subprocess.run('ifconfig ' + cmd3 + ' down', shell=True)
 subprocess.run(cmd1, shell=True)
@@ -80,9 +95,11 @@ subprocess.run('ifconfig ' + cmd3 + ' up', shell=True)
 
 print()
 
-print(subprocess.run('ip ' + 'link'))
+subprocess.check_output(cmd4)
+print(subprocess.check_output(cmd4))
+
 
 # For troubleshooting try following commands:
-# subprocess.run('sudo' + 'ifconfig' + cmd3 + 'promisc') -insert between line 76 and 77
-# subprocess.run('sudo' + 'ifconfig' + cmd3 + 'hw' + 'ether' + shlex.quote(mac_address)) -as line 78
-# subprocess.run('sudo' + 'service' + 'networking' + 'restart') - as line 79
+# subprocess.run('sudo ' + 'ifconfig ' + cmd3 + ' promisc', shell=True)                 --insert between line 91 and 92
+# subprocess.run('sudo ' + 'ifconfig ' + cmd3 + ' hw ' + 'ether ' + cmd5, shell=True)   --replace line 93
+# subprocess.run('sudo ' + 'service ' + 'networking ' + 'restart', shell=True)          --replace line 94
