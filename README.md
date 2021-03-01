@@ -15,7 +15,11 @@ This program is only for educational and research purposes and I am not responsi
 
 Why to change the Media Access Control (MAC) address?
 
-The MAC address is a unique identifier. Changing the assigned MAC address may allow the user to bypass access control lists on servers or routers, either hiding a computer on a network or allowing it to impersonate another network device. It is stored in Networkprotocolls (for example NAT) because of that it can be used to track Your Internetactivity and your Geolocalisation via public networks. MAC spoofing is done for legitimate and illicit purposes alike.
+The MAC address is a unique identifier. Changing the assigned MAC address may allow the user to bypass access control lists on servers or routers,
+either hiding a computer on a network or allowing it to impersonate another network device. It is stored in Networkprotocolls (for example NAT) because of that,
+it can be used to track Your Internetactivity and your Geolocalisation via public networks. 
+
+MAC spoofing is done for legitimate and illicit purposes alike.
 
 
 Installation:
@@ -29,7 +33,8 @@ Commands marked with * [] *, like * [COMMAND] * --> type: COMMAND into the conso
 
 3. Requirements: Python => 3.9.0
                  Rfkill lists, enabling and disabling wireless devices. For killing any daemon processes. --> * [pip3 install] * or * [apt install] * + * [rfkill] *
-                 optional: * [pip3 install] * or * [apt install] * + * [mac2vendors] * --> for later features like implementing a vendor lookup in the script
+                 optional: * [pip3 install] * or * [apt install] * + * [mac2vendors] * --> for later features like implementing a vendor lookup in the script, 
+								 the Debian distros Kali and Parrot should already have it
 
 4. * [git clone https://github.com/nese1110/Python-3.9-MAC-Spoofer-with-Templates.git] *
 
