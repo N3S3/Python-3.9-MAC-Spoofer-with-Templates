@@ -32,7 +32,7 @@ Commands marked with * [] *, like * [COMMAND] * --> type: COMMAND into the conso
 2. You need to have root or superuser priveleges.--> * [sudo su] *
 
 3. Requirements: Python => 3.9.0
-                 Rfkill lists, enabling and disabling wireless devices. For killing any daemon processes. --> * [pip3 install] * or * [apt install] * + * [rfkill] *
+                 rfkill lists, enabling and disabling wireless devices. For killing any daemon processes. --> * [pip3 install] * or * [apt install] * + * [rfkill] *
                  optional: * [pip3 install] * or * [apt install] * + * [mac2vendors] * --> for later features like implementing a vendor lookup in the script, 
 								 the Debian distros Kali and Parrot should already have it
 
