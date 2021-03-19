@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-# This is my first script, so do not expect to much XD. Inspired by Zaid Sabih - Ethical Hacker, Computer Scientist and CEO of zSecurity - .
-# MAC-SPOOF version 0.9.1A for Linux witten by Sebastian Nestler (_N3S3_)
-
 import subprocess
 import optparse
 import shlex
@@ -13,6 +10,8 @@ import time
 import os
 import sys
 from termcolor import colored, cprint
+import pydoc
+from subprocess import Popen, PIPE
 
 
 # from mac2vendors import get_mac_vendor
@@ -91,39 +90,25 @@ req  = urllib.request.urlopen(url)
 print(""" [+] Loading the large updated MAC address database from the Institute of Electrical and Electronics Engineers (IEEE). 
               No fear, its just a huge .txt!""")
 time.sleep(4)
-for line in req :
-    print(line, sep = '\n')
+string=req.read().decode()
+
+pydoc.pager(string)
 print()
 print()
 
 print("""
-
 The 3 identifier bytes of some famous random companies in hexadecimal.
-
-
 54:77:8A        Hewlett Packard Enterprise
-
 24:71:52        DELL Inc.
-
 3C:7C:3F        ASUSTek COMPUTER Inc.
-
 FC:44:9F        ZTE Corporation
-
 CC:D2:81        Apple Inc.
-
 F0:1D:2D        Cisco Systems Inc.
-
 4C:02:02        Xiaomi Communications Co. LTD
-
 9C:B2:E8        HUAWEI TECHNOLOGIES Co. LTD
-
 A4:E3:1B        Nokia 
-
 F4:D9:FB        Samsung Electronics Co. LTD
-
 70:BC:10        Microsoft Corporation
-
-
 [+] Please scroll up and choose the 3 identifier bytes - 1st 6 digits XX:XX:XX - from a company above and 
     add another 3 bytes - 2nd 6 digits XX:XX:XX - with random values in hexadecimal [X=0-9 or A-F]. All seperated by colons. 
     You have to substitute the dash (-) with a colon (:) of the hex bytes from the IEEE list. Enter the MAC like this: 70:BC:10:A3:B2:C1. """)
@@ -136,20 +121,23 @@ new_address = input(
 
 print()
 
-print(" [+] Changing MAC address for " + interface + " to " + new_address)
+print(f" [+] Changing MAC address for {interface} to {new_address}")
+
+sp = Popen(cmd , shell=True, stdin=PIPE)
+out, err = sp.communicate(_user_pass+'\n')   
 
 
-cmd1 = shlex.split('rfkill unblock all')
-cmd2 = shlex.split('ifconfig ' + interface + ' hw ' + 'ether ' + new_address)
+cmd1 = shlex.split("rfkill unblock all")
+cmd2 = shlex.split(f"ifconfig {interface} hw ether {new_address}")
 cmd3 = shlex.quote(interface)
-cmd4 = shlex.split('ip' + ' link')
+cmd4 = shlex.split("ip link")
 cmd5 = shlex.quote(new_address)
 
 
-subprocess.run('ifconfig ' + cmd3 + ' down', shell = True)  # line 1
+subprocess.run(f"ifconfig {cmd3} down", shell = True)  # line 1
 subprocess.run(cmd1, shell = True)                          # line 2
 subprocess.run(cmd2, shell = True)                          # line 3
-subprocess.run('ifconfig ' + cmd3 + ' up', shell = True)    # line 4
+subprocess.run(f"ifconfig {cmd3} up", shell = True)    # line 4
 
 print()
 
