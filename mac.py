@@ -127,13 +127,14 @@ sp = Popen(cmd , shell=True, stdin=PIPE)
 out, err = sp.communicate(_user_pass+'\n')   
 
 
+
 cmd1 = shlex.split("rfkill unblock all")
 cmd2 = shlex.split(f"ifconfig {interface} hw ether {new_address}")
 cmd3 = shlex.quote(interface)
 cmd4 = shlex.split("ip link")
 cmd5 = shlex.quote(new_address)
 
-
+subprocess.run(f"sudo su", shell = True)
 subprocess.run(f"ifconfig {cmd3} down", shell = True)  # line 1
 subprocess.run(cmd1, shell = True)                          # line 2
 subprocess.run(cmd2, shell = True)                          # line 3
