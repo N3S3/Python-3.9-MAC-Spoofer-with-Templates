@@ -9,6 +9,7 @@ import fileinput
 import time
 import os
 import sys
+import socket
 from termcolor import colored, cprint
 import pydoc
 from subprocess import Popen, PIPE
@@ -25,7 +26,7 @@ parser.add_option("-m", "--mac", dest="new_address", help=""" The new virtual MA
                                                                   total random MAC addresses are working too as long as they are UNICAST (e.g. 97:11:B7:A3:41:95);
                                                                   EVERY TIME when You do a shut down, a restart or a switch user the original hardcoded
                                                                   MAC address is being RESTORED.--> If You have trouble with Your internet connection
-                                                                  because of the script, just log out and log in or do a ifconfig [interface] up.
+                                                                  because of the script, just log out and log in or do a ifconfig [interface] up / ip link set [interface] up.
                                                                   Everything should be working as usual again. """)
 # parser.add_option("-v", "--vendor", dest="vendor_list, help="Vendor lookup")
 
@@ -78,6 +79,12 @@ print()
 
 print()
 
+
+#Output: ['lo', 'eth0', 'wlan0', 'tun0', 'wlx00c0caac1631']
+print(socket.if_nameindex())
+print()
+print()
+
 print(""" [+] Please choose your interface. For help do a Ctrl+c and type " python3 mac.py --help " """)
 
 interface = input("interface --> ")
@@ -89,8 +96,7 @@ url  = "http://standards-oui.ieee.org/oui/oui.txt"
 req  = urllib.request.urlopen(url)
 print(""" [+] Loading the large updated MAC address database from the Institute of Electrical and Electronics Engineers (IEEE). 
               No fear, its just a huge .txt!""")
-time.sleep(4)
-string=req.read().decode()
+string = req.read().decode()
 
 pydoc.pager(string)
 print()
@@ -98,6 +104,7 @@ print()
 
 print("""
 The 3 identifier bytes of some famous random companies in hexadecimal.
+
 54:77:8A        Hewlett Packard Enterprise
 24:71:52        DELL Inc.
 3C:7C:3F        ASUSTek COMPUTER Inc.
@@ -109,6 +116,7 @@ F0:1D:2D        Cisco Systems Inc.
 A4:E3:1B        Nokia 
 F4:D9:FB        Samsung Electronics Co. LTD
 70:BC:10        Microsoft Corporation
+
 [+] Please scroll up and choose the 3 identifier bytes - 1st 6 digits XX:XX:XX - from a company above and 
     add another 3 bytes - 2nd 6 digits XX:XX:XX - with random values in hexadecimal [X=0-9 or A-F]. All seperated by colons. 
     You have to substitute the dash (-) with a colon (:) of the hex bytes from the IEEE list. Enter the MAC like this: 70:BC:10:A3:B2:C1. """)
@@ -121,32 +129,30 @@ new_address = input(
 
 print()
 
-print(f" [+] Changing MAC address for {interface} to {new_address}")
+print(f' [+] Changing MAC address for {interface} to {new_address}')
 
-sp = Popen(cmd , shell=True, stdin=PIPE)
-out, err = sp.communicate(_user_pass+'\n')   
+print()
+#sp = Popen(cmd , shell=True, stdin=PIPE)
+#out, err = sp.communicate(_user_pass+'\n')   
 
 
 
-cmd1 = shlex.split("rfkill unblock all")
-cmd2 = shlex.split(f"ifconfig {interface} hw ether {new_address}")
-cmd3 = shlex.quote(interface)
-cmd4 = shlex.split("ip link")
-cmd5 = shlex.quote(new_address)
+cmd0 = ('ip link')
+cmd1 = ('rfkill unblock all')
+cmd2 = ('ip link set')
+cmd3 = (interface)
+cmd4 = (f'{cmd2} dev {cmd3} address {new_address}')
 
-subprocess.run(f"sudo su", shell = True)
-subprocess.run(f"ifconfig {cmd3} down", shell = True)  # line 1
-subprocess.run(cmd1, shell = True)                          # line 2
-subprocess.run(cmd2, shell = True)                          # line 3
-subprocess.run(f"ifconfig {cmd3} up", shell = True)    # line 4
+
+subprocess.run(f'sudo -A', shell = True)
+subprocess.run(f'sudo -s {cmd2} {cmd3} "down"', shell = True)              # line 1
+subprocess.run(f'sudo -s {cmd1}', shell = True)                            # line 2
+subprocess.run(f'sudo -s {cmd4}', shell = True)                            # line 3
+subprocess.run(f'sudo -s {cmd2} {cmd3} "up"', shell = True)                # line 4
 
 print()
 
-subprocess.check_output(cmd4)
-print(subprocess.check_output(cmd4))
+
+print(subprocess.run(f'ip link list', shell = True))
 
 
-# For troubleshooting try following commands with and without sudo:                                   --UNICAST Test MAC: A3:56:94:B1:F8:00 for copy and paste
-# subprocess.run('sudo ' + 'ifconfig ' + cmd3 + ' promisc', shell=True)                               --insert between # line 1 and # line 2 !!!Attention the device will capture all packets in the network!!!
-# subprocess.run('sudo ' + 'ip ' + 'link ' + 'set ' + 'dev 'cmd3 + ' address ' + cmd5, shell=True)    --replace # line 3
-# subprocess.run('sudo ' + 'service ' + 'networking ' + 'restart', shell=True)                        --replace # line 4
